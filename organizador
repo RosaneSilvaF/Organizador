@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo "---------------------------------------------------------------------------------------"
+case $# in
+    0)
+        echo "Utilização incorreta. Modo de uso : ./organizador [Diretório]"
+	exit 1
+	;;
+    1)
+	echo "Comando aceito. Prosseguindo com organização."
+	;;
+    *)
+        echo "Mais de um parâmetro utilizado. Modo de uso : ./organizador [Diretório]"
+        exit 1
+esac
+echo "---------------------------------------------------------------------------------------"
+
+if [ ! -d $1 ]; then
+    echo "Diretório não identificado. Certifique-se que o diretório existe e que o caminho correto foi passado."
+    exit 1
+fi
+
+if [ -z "$(ls -a $1)" ]; then
+    echo "O diretório $1 está vazio. Insira arquivos para serem organizados e tente novamente."
+    exit 1
+fi
+
+IFS=$'\n'
+
+for arquivo in $(ls -p "$1" | grep -v "/"); do
+    extensao="${arquivo##*.}"
+    [ -d "$1/$extensao" ] || mkdir "$1/$extensao"
+    mv "$1/$arquivo" "$1/$extensao/$arquivo" 
+done
+
+IFS=$' \t\n'
+
+echo "Organização finalizada! Extensões classificadas: "
+
+ls -a $1
+
+echo "---------------------------------------------------------------------------------------"
+exit 0
